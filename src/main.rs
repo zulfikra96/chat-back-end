@@ -20,6 +20,7 @@ use actix_web::{
 use actix_web_actors::ws::{self};
 use dotenv::dotenv;
 use interface::global::ResponseJson;
+use routes::{ members, auth };
 
 async fn chat_route(
     req: HttpRequest,
@@ -73,8 +74,9 @@ async fn main() -> std::io::Result<()> {
             .app_data(json_config)
             .app_data(web::Data::new(get_connection_pool().clone()))
             .app_data(web::Data::new(async_connection().clone()))
-            .configure(routes::auth::auth_config)
+            .configure(auth::auth_config)
             .configure(routes::users::users_config)
+            .configure(members::members_config)
     })
     .bind("127.0.0.1:8000")
     .unwrap()

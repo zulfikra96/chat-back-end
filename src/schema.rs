@@ -18,6 +18,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    rooms_message (id) {
+        id -> Uuid,
+        room_id -> Uuid,
+        user_id -> Uuid,
+        message -> Nullable<Text>,
+        attachment_url -> Nullable<Text>,
+        created_at -> Nullable<Timestamp>,
+        updated_at -> Nullable<Timestamp>,
+    }
+}
+
+diesel::table! {
     use diesel::sql_types::*;
     use super::sql_types::RoleType;
 
@@ -44,11 +56,14 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(rooms_message -> rooms (room_id));
+diesel::joinable!(rooms_message -> users (user_id));
 diesel::joinable!(users_room -> rooms (room_id));
 diesel::joinable!(users_room -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     rooms,
+    rooms_message,
     users,
     users_room,
 );

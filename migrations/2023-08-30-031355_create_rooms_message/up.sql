@@ -6,6 +6,15 @@ create table rooms_message (
     message text,
     attachment_url text,
     created_at timestamp default now(),
-    updated_at timestamp
-    foreign key room_id
-)
+    updated_at timestamp,
+    
+    CONSTRAINT room_fk 
+        FOREIGN KEY(room_id)
+            REFERENCES rooms(id)
+                on delete set null,
+
+    CONSTRAINT user_fk
+        FOREIGN KEY(user_id)
+            REFERENCES users(id)
+                on delete set null
+);

@@ -161,7 +161,6 @@ pub fn auth_fn(req: ServiceRequest, role: &str) -> Result<ServiceRequest, (Servi
 
     let auth_header = str.to_str().unwrap();
     let spliter: Vec<&str> = auth_header.split(" ").collect();
-    dotenv::dotenv().ok();
     if spliter.len() < 2 {
         return Err((req, ErrorResponse {
             message: "Unauthorized".to_string(),
@@ -190,7 +189,25 @@ pub fn auth_fn(req: ServiceRequest, role: &str) -> Result<ServiceRequest, (Servi
         }
     };
 
-    if plain.claims.role != role {
+    if role.contains("|") {
+        let is_authorized:Vec<String> = role.split("|").filter_map(|e| {
+            if e.to_string() == plain.claims.role {
+                Some(e.to_string())
+            } else {
+                None
+            }
+        }).collect();
+        
+        if is_authorized.len() == 0 {
+            return Err((req, ErrorResponse {
+                message: "Unauthorized".to_string(),
+                status: "fail".to_string(),
+                status_code: 401,
+            }));
+        }
+        
+    } 
+    else if  plain.claims.role != role {
         return Err((req, ErrorResponse {
             message: "Unauthorized".to_string(),
             status: "fail".to_string(),

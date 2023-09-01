@@ -1,9 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
 use actix::prelude::*;
-use rand::{rngs::ThreadRng, Rng};
-use serde::{Deserialize, Serialize};
-use serde_json::json;
 
 use crate::messages::{self, *};
 
@@ -37,7 +34,6 @@ impl ChatServer {
 
         if let Some(addr) = self.sessions.get(&to_id) {
             addr.do_send(messages::Message(message.to_owned()))
-            
         }
     }
 }
@@ -60,8 +56,6 @@ impl Handler<Disconnect> for ChatServer {
                 }
             }
         }
-
-        
     }
 }
 
@@ -93,7 +87,7 @@ impl Handler<Connect> for ChatServer {
             .iter()
             .filter(|conn_id| *conn_id.to_owned() != msg.self_id)
             .for_each(|conn_id| {
-                self.send_message(*conn_id, &format!("{} just joined!", msg.self_id), )
+                self.send_message(*conn_id, &format!("{} just joined!", msg.self_id))
             });
 
         self.sessions.insert(msg.self_id, msg.addr);
@@ -110,8 +104,6 @@ impl Handler<Connect> for ChatServer {
         // self.send_message("main", &format!("Total visitor count "), 0);
     }
 }
-
-
 
 impl Handler<ListRooms> for ChatServer {
     type Result = MessageResult<ListRooms>;
@@ -131,9 +123,13 @@ impl Handler<ClientMessage> for ChatServer {
 
     fn handle(&mut self, msg: ClientMessage, _: &mut Context<Self>) {
         println!("stored rooms {:?}", self.rooms.get(&msg.room));
-        self.rooms.get(&msg.room).unwrap().iter().for_each(|client| {
-            self.send_message(*client, msg.msg.as_str());
-        })
+        self.rooms
+            .get(&msg.room)
+            .unwrap()
+            .iter()
+            .for_each(|client| {
+                self.send_message(*client, msg.msg.as_str());
+            })
     }
 }
 

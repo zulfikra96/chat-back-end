@@ -1,4 +1,4 @@
-use crate::{interface::global::ResponseJsonWithData};
+use crate::interface::global::ResponseJsonWithData;
 use actix_web::{web, HttpResponse};
 use deadpool_postgres::Pool;
 use serde::Serialize;
