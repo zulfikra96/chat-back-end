@@ -17,8 +17,11 @@ pub fn establish_connection() -> PgConnection{
     PgConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}",database_url))
 }
-#[allow(dead_code)]
 
+/**
+ * Asyn connection pool
+ */
+#[allow(dead_code)]
 pub fn get_connection_pool() -> Pool<ConnectionManager<PgConnection>> {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("Database url must be set");
@@ -30,8 +33,11 @@ pub fn get_connection_pool() -> Pool<ConnectionManager<PgConnection>> {
         .expect("Could not connect")
         
 }
-#[allow(dead_code)]
 
+/**
+ * Database connection configuration
+ */
+#[allow(dead_code)]
 pub fn async_connection() -> TokioPool {
     dotenv().ok();
     let mut pg_config = tokio_postgres::Config::new();

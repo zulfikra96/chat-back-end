@@ -9,7 +9,7 @@ pub mod schema;
 mod session;
 mod socket_server;
 pub mod types;
-use crate::config::database::{async_connection, get_connection_pool};
+use crate::{config::database::{async_connection, get_connection_pool}, routes::chat};
 use actix::{Actor, Addr};
 use actix_cors::Cors;
 use actix_web::{
@@ -40,7 +40,7 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
     let port_string = std::env::var("PORT")
-        .expect("Port is undefined")
+        .expect("Port is undefined")            
         .to_string();
     let port_int = port_string.parse::<u16>().unwrap();
 
@@ -68,7 +68,7 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
         App::new()
             .wrap(cors)
-            .route("/{room}", web::get().to(chat_route))
+            // .route("/{room}", web::get().to(chat_route))
             .app_data(web::Data::new(server.clone()))
             // .app_data(web::Data::from(app_state.clone()))
             .app_data(json_config)
@@ -77,6 +77,8 @@ async fn main() -> std::io::Result<()> {
             .configure(auth::auth_config)
             .configure(routes::users::users_config)
             .configure(members::members_config)
+            .configure(chat::chat_config)
+            .configure(routes::ws::ws_config)
     })
     .bind("127.0.0.1:8000")
     .unwrap()

@@ -60,6 +60,7 @@ struct DataResponse {
     token: String,
     id: Uuid,
     nrp: String,
+    role: Role
 }
 
 #[derive(Debug, Serialize)]
@@ -164,6 +165,7 @@ pub async fn login_controller(
             token,
             id: user.id,
             nrp: token_binding.nrp,
+            role: user.role
         },
         message: "Success to login".to_string(),
         status: "success".to_string(),

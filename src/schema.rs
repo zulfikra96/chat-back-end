@@ -9,7 +9,7 @@ pub mod sql_types {
 diesel::table! {
     rooms (id) {
         id -> Uuid,
-        #[max_length = 50]
+        #[max_length = 100]
         name -> Nullable<Varchar>,
         is_group -> Nullable<Bool>,
         created_at -> Nullable<Timestamp>,

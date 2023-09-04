@@ -106,7 +106,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
             Ok(msg) => msg,
         };
 
-        log::debug!("WEBSOCKET MESSAGE: {msg:?}");
 
         match msg {
             ws::Message::Ping(msg) => {

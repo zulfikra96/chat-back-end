@@ -10,27 +10,23 @@ actix-web = "4"
 dotenv = "0.15.0"
 diesel = { version = "2.1.0", features = ["postgres","uuid", "r2d2", "chrono", "extras"] }
 postgres = "0.19.6"
-tokio-postgres = { version = "0.7.9", features = ["with-chrono-0_4", "with-uuid-1"]}
+tokio-postgres = { version = "0.7.9", features = ["with-chrono-0_4", "with-uuid-1","with-serde_json-1"]}
 serde = { version = "1.0.184", features = ["derive"] }
 futures = "0.3.28"
 serde_json = "1.0.105"
 futures-util = "0.3.28"
-deadpool-postgres = { version = "0.10.5" }
+deadpool-postgres = { version = "0.10.5", features = ["serde","rt_async-std_1"] }
 chrono = { version = "0.4.26", features = ["serde"] }
 tokio = { version = "1.32.0" , features = ["full"]}
-ring = "0.16.20"
 data-encoding = "2.4.0"
 magic-crypt = "3.1.12"
 postgres-types = { version = "0.2.6", features = ["derive"] }
 uuid = { version = "1.4.1", features = ["serde", "v4",] }
 r2d2 = "0.8.10"
 install = "0.0.0"
-watch = "0.2.3"
 derive_more = "0.99.17"
 jsonwebtoken = "8.3.0"
 actix-cors = "0.6.4"
 actix-web-actors = "4.2.0"
 actix = "0.13.0"
-rust_socketio = { version = "0.4.2", features = ["async"] }
 rand = "0.8.5"
-log = "0.4.20"

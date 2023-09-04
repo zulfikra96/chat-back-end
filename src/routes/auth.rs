@@ -14,7 +14,7 @@ pub fn auth_config(cfg: &mut web::ServiceConfig) {
             .service(
                 web::resource("/me")
                     .wrap_fn(|req, srv| {
-                        let auth = auth_fn(req, "ADMIN");
+                        let auth = auth_fn(req, "ADMIN|MEMBER");
                         match auth {
                             Ok(req) => return srv.call(req),
                             Err(err) => return {
