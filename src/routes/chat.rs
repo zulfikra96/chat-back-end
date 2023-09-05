@@ -1,7 +1,7 @@
 use actix::fut::ok;
 use actix_web::{web, dev::Service};
 
-use crate::{controllers::chat::{create_chat_room, get_chat_rooms}, config::middleware::auth_fn};
+use crate::{controllers::chat::{create_chat_room, get_chat_rooms, get_chat_list}, config::middleware::auth_fn};
 
 pub fn chat_config(cfg: &mut web::ServiceConfig) {
     cfg.service(
@@ -21,5 +21,6 @@ pub fn chat_config(cfg: &mut web::ServiceConfig) {
             })
             .service(create_chat_room::index)
             .service(get_chat_rooms::index)
+            .service(get_chat_list::index)
     );
 }
