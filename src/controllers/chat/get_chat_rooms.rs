@@ -21,6 +21,7 @@ pub async fn index(req: HttpRequest, db: Data<Pool>) -> HttpResponse {
     let pool = db.get().await.expect("Db must be set");
     let decode = JWT {
         headers: req.headers(),
+        token: &None
     };
     let token_data = decode.decode_token().unwrap();
     let query = r#"

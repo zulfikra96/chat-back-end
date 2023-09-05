@@ -1,6 +1,10 @@
-use std::collections::{HashMap, HashSet};
+use std::{collections::{HashMap, HashSet}, str::FromStr};
 
 use actix::prelude::*;
+use async_trait::async_trait;
+use chrono::NaiveDateTime;
+use postgres_types::ToSql;
+use serde::{Deserialize, Serialize};
 
 use crate::messages::{self, *};
 
@@ -19,19 +23,14 @@ pub struct ChatServer {
 impl Default for ChatServer {
     fn default() -> ChatServer {
         // println!("Call new");
-
         ChatServer {
             sessions: HashMap::new(),
             rooms: HashMap::new(),
         }
     }
 }
-
 impl ChatServer {
     pub fn send_message(&self, to_id: uuid::Uuid, message: &str) {
-        println!("session >>{:?}", self.sessions);
-        println!("rooms >>{:?}", self.rooms);
-
         if let Some(addr) = self.sessions.get(&to_id) {
             addr.do_send(messages::Message(message.to_owned()))
         }
@@ -64,7 +63,7 @@ impl Handler<Connect> for ChatServer {
 
     fn handle(&mut self, msg: messages::Connect, _: &mut Self::Context) -> Self::Result {
         println!("Someone joined");
-        println!("{:?}", std::thread::current());
+        // println!("{:?}", std::thread::current());
         // println!("joined id {}", id);
         // println!("room {:?}", msg.addr);
         // broadcast to main room that someone joined
@@ -75,6 +74,7 @@ impl Handler<Connect> for ChatServer {
         // };
         // let mut message = serde_json::to_string(&response_message).unwrap();
         // self.send_message("main", "Someone joined", 0);
+        // println!(" trace {:?}", msg);
 
         self.rooms
             .entry(msg.room_id.clone())
@@ -118,11 +118,34 @@ impl Handler<ListRooms> for ChatServer {
     }
 }
 
+#[derive(Debug, Deserialize, Serialize, ToSql)]
+struct MessageJson {
+    token: String,
+    message: String,
+    created_at: i64
+}
+
 impl Handler<ClientMessage> for ChatServer {
     type Result = ();
 
-    fn handle(&mut self, msg: ClientMessage, _: &mut Context<Self>) {
-        println!("stored rooms {:?}", self.rooms.get(&msg.room));
+    fn handle(&mut self, msg: ClientMessage, ctx: &mut Context<Self>) {
+        let room = msg.room.clone();
+        let id = msg.id.clone();
+        let  message = serde_json::from_str::<MessageJson>(&msg.msg.to_string()).unwrap();
+        println!("Message {}", message.created_at);
+        let created_at = match  NaiveDateTime::from_timestamp_millis(message.created_at) {
+            Some(res) => res,
+            _ => return println!("return Nothing")
+        };
+
+        
+        let fut = async move {
+            let smt = msg.db.prepare("INSERT INTO rooms_message (room_id, user_id, message, created_at) VALUES($1, $2, $3, $4)").await.unwrap();
+            // println!("trace {:?}", message);
+            msg.db.execute(&smt, &[&uuid::Uuid::parse_str(&room).unwrap(),&id, &message.message.to_string(), &created_at]).await.unwrap();
+        };
+        let fut = actix::fut::wrap_future::<_, Self>(fut);
+        ctx.spawn(fut);
         self.rooms
             .get(&msg.room)
             .unwrap()
@@ -130,6 +153,8 @@ impl Handler<ClientMessage> for ChatServer {
             .for_each(|client| {
                 self.send_message(*client, msg.msg.as_str());
             })
+
+        
     }
 }
 

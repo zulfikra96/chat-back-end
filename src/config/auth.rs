@@ -1,7 +1,7 @@
 use std::env;
 
 use actix_web::http::{self, header::HeaderMap};
-use jsonwebtoken::{decode, DecodingKey, TokenData, Validation};
+use jsonwebtoken::{decode, DecodingKey, TokenData, Validation, errors::{Error, ErrorKind}};
 use magic_crypt::{new_magic_crypt, MagicCryptTrait};
 
 use crate::interface::global::UserToken;
@@ -12,6 +12,7 @@ pub struct Auth {
 
 pub struct JWT<'a> {
     pub headers: &'a HeaderMap,
+    pub token: &'a Option<String>
 }
 
 impl Auth {
@@ -48,4 +49,16 @@ impl<'a> JWT<'a> {
         );
         decode_token
     }
+
+    pub fn decode_token_directly(&self) -> Result<TokenData<UserToken>, jsonwebtoken::errors::Error> {
+        let private_key = env::var("PRIVATE_KEY").expect("private is not defied");
+        if let Some(res) = self.token {
+            let decode_token = decode(&res, &DecodingKey::from_secret(private_key.as_ref()), &Validation::new(jsonwebtoken::Algorithm::HS256));
+            decode_token
+        } else {
+            Err(Error::from(ErrorKind::InvalidToken))
+        }
+    }
 }
+
+

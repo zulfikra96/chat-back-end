@@ -22,18 +22,18 @@ use dotenv::dotenv;
 use interface::global::ResponseJson;
 use routes::{ members, auth };
 
-async fn chat_route(
-    req: HttpRequest,
-    stream: web::Payload,
-    srv: web::Data<Addr<socket_server::ChatServer>>,
-    path: web::Path<String>,
-) -> Result<HttpResponse, Error> {
-    // let _srv = srv.clone();
-    // println!("call chat route {:?}", )
-    let room = path.into_inner();
-    let ws = session::WsChatSession::new(room, srv.get_ref().clone());
-    ws::start(ws, &req, stream)
-}
+// async fn chat_route(
+//     req: HttpRequest,
+//     stream: web::Payload,
+//     srv: web::Data<Addr<socket_server::ChatServer>>,
+//     path: web::Path<String>,
+// ) -> Result<HttpResponse, Error> {
+//     // let _srv = srv.clone();
+//     // println!("call chat route {:?}", )
+//     let room = path.into_inner();
+//     let ws = session::WsChatSession::new(room, srv.get_ref().clone());
+//     ws::start(ws, &req, stream)
+// }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

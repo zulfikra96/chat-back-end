@@ -1,4 +1,7 @@
+use std::sync::Arc;
+
 use actix::prelude::*;
+use deadpool_postgres::Object;
 use serde::{Deserialize, Serialize};
 
 #[derive(Message)]
@@ -22,10 +25,11 @@ pub struct Disconnect {
 
 #[derive(Message, Debug)]
 #[rtype(result = "()")]
-pub struct ClientMessage {
+pub struct ClientMessage{
     pub id: uuid::Uuid,
     pub msg: String,
     pub room: String,
+    pub db: Arc<Object>
 }
 
 

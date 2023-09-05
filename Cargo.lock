@@ -491,6 +491,7 @@ dependencies = [
  "actix-cors",
  "actix-web",
  "actix-web-actors",
+ "async-trait",
  "chrono",
  "data-encoding",
  "deadpool-postgres",

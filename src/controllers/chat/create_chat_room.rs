@@ -70,6 +70,7 @@ pub async fn index(
     let pool = db.get().await.expect("Connection database must be set");
     let jwt = JWT {
         headers: req.headers(),
+        token: &None
     };
     let decode_jwt = jwt.decode_token().unwrap();
     let claims = decode_jwt.claims;

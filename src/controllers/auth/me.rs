@@ -10,6 +10,7 @@ use super::login::ErrorResponse;
 pub async fn index(req: HttpRequest) -> HttpResponse {
     let auth = JWT {
         headers: req.headers(),
+        token: &None
     };
     let decode_token = auth.decode_token();
 
